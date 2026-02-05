@@ -24,16 +24,49 @@ jobs:
       - name: Debug Secrets (Safe)
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          COLLEGE_NEWS_API: ${{ secrets.COLLEGE_NEWS_API }}
+          COLLEGE_EXAM_API: ${{ secrets.COLLEGE_EXAM_API }}
         run: |
+          # RESEND_API_KEY
           if [ -z "$RESEND_API_KEY" ]; then
             echo "❌ ERROR: RESEND_API_KEY is EMPTY or UNDEFINED"
           else
             echo "✅ SUCCESS: RESEND_API_KEY is loaded (Length: ${#RESEND_API_KEY})"
           fi
 
+          # EMAIL_FROM
+          if [ -z "$EMAIL_FROM" ]; then
+            echo "❌ ERROR: EMAIL_FROM is EMPTY or UNDEFINED"
+          else
+            echo "✅ SUCCESS: EMAIL_FROM is loaded"
+          fi
+
+          # EMAIL_TO
+          if [ -z "$EMAIL_TO" ]; then
+            echo "❌ ERROR: EMAIL_TO is EMPTY or UNDEFINED"
+          else
+            echo "✅ SUCCESS: EMAIL_TO is loaded"
+          fi
+
+          # COLLEGE_NEWS_API
+          if [ -z "$COLLEGE_NEWS_API" ]; then
+            echo "❌ ERROR: COLLEGE_NEWS_API is EMPTY or UNDEFINED"
+          else
+            echo "✅ SUCCESS: COLLEGE_NEWS_API is loaded"
+          fi
+
+          # COLLEGE_EXAM_API
+          if [ -z "$COLLEGE_EXAM_API" ]; then
+            echo "❌ ERROR: COLLEGE_EXAM_API is EMPTY or UNDEFINED"
+          else
+            echo "✅ SUCCESS: COLLEGE_EXAM_API is loaded"
+          fi
+
       - name: Run Monitor Script
         env:
-          RESEND_API_KEY: ${{ secrets.MY_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
           COLLEGE_NEWS_API: ${{ secrets.COLLEGE_NEWS_API }}
