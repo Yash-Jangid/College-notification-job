@@ -4,7 +4,7 @@ on:
   schedule:
     # Runs at 04:00 UTC (9:30 AM IST) every day
     - cron: '0 5 * * *'
-  workflow_dispatch: # Allows you to run it manually to test
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   check-news:
@@ -23,11 +23,12 @@ jobs:
       run: npm install
 
     - name: Run Monitor Script
-      env:
-        EMAIL_TO: ${{ secrets.EMAIL_TO }}
+      # THIS IS THE MISSING PART YOU NEED TO ADD:
+      env: 
+        RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-        TEST_MODE: ${{ secrets.TEST_MODE }}
+        EMAIL_TO: ${{ secrets.EMAIL_TO }}
         COLLEGE_NEWS_API: ${{ secrets.COLLEGE_NEWS_API }}
         COLLEGE_EXAM_API: ${{ secrets.COLLEGE_EXAM_API }}
-        RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        TEST_MODE: ${{ secrets.TEST_MODE }}
       run: node index.js
