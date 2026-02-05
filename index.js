@@ -104,7 +104,7 @@ async function sendEmail(notices) {
     `).join('');
 
     try {
-        await resend.emails.send({
+        const { data, error } = await resend.emails.send({
             from: EMAIL_FROM,
             to: [EMAIL_TO],
             subject: `${TEST_MODE ? '[TEST] ' : ''}🚨 CRITICAL: 6th Sem Exam Notice Detected!`,
@@ -114,9 +114,17 @@ async function sendEmail(notices) {
                 ${noticeHtml}
             `
         });
-        console.log('📧 Email sent successfully!');
+
+        if (error) {
+            console.error('❌ Resend API Error:', error);
+            throw new Error(`Email sending failed: ${error.message} (${error.name})`);
+        }
+
+        console.log('📧 Email sent successfully!', data);
     } catch (error) {
-        console.error('Email failed:', error);
+        // Log the full error to help debugging
+        console.error('❌ Critical Email Failure:', error);
+        throw error; // Re-throw so the main loop can fail the process
     }
 }
 
