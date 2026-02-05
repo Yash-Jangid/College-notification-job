@@ -2,9 +2,12 @@ require('dotenv').config();
 const axios = require('axios');
 const { Resend } = require('resend');
 
+// Helper to clean dirty env vars (quotes, spaces)
+const cleanUrl = (url) => (url ? url.replace(/['"\s]/g, '') : '');
+
 // --- CONFIGURATION ---
-const NEWS_API = process.env.COLLEGE_NEWS_API;
-const EXAM_API = process.env.COLLEGE_EXAM_API;
+const NEWS_API = cleanUrl(process.env.COLLEGE_NEWS_API);
+const EXAM_API = cleanUrl(process.env.COLLEGE_EXAM_API);
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const EMAIL_TO = process.env.EMAIL_TO;
@@ -85,6 +88,7 @@ async function checkNews() {
 
     } catch (error) {
         console.error('❌ Error:', error.message);
+        process.exit(1); // Fail the workflow so it's red in GHA
     }
 }
 
