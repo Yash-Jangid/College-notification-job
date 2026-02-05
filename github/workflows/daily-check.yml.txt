@@ -1,0 +1,33 @@
+name: Daily Exam Notice Checker
+
+on:
+  schedule:
+    # Runs at 04:00 UTC (9:30 AM IST) every day
+    - cron: '0 5 * * *'
+  workflow_dispatch: # Allows you to run it manually to test
+
+jobs:
+  check-news:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run Monitor Script
+      env:
+        EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+        TEST_MODE: ${{ secrets.TEST_MODE }}
+        COLLEGE_NEWS_API: ${{ secrets.COLLEGE_NEWS_API }}
+        COLLEGE_EXAM_API: ${{ secrets.COLLEGE_EXAM_API }}
+        RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      run: node index.js
