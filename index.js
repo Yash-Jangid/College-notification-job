@@ -102,7 +102,7 @@ async function sendEmail(notices) {
             </a>
         </div>
     `).join('');
-
+    console.log(`📧 DEBUG: Sending to [${EMAIL_TO.trim()}] from [${process.env.EMAIL_FROM}]`);
     try {
         const { data, error } = await resend.emails.send({
             from: EMAIL_FROM,
