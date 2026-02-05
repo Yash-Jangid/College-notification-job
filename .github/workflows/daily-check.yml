@@ -1,0 +1,42 @@
+name: Daily Exam Notice Checker
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-news:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Debug Secrets (Safe)
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: |
+          if [ -z "$RESEND_API_KEY" ]; then
+            echo "❌ ERROR: RESEND_API_KEY is EMPTY or UNDEFINED"
+          else
+            echo "✅ SUCCESS: RESEND_API_KEY is loaded (Length: ${#RESEND_API_KEY})"
+          fi
+
+      - name: Run Monitor Script
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          COLLEGE_NEWS_API: ${{ secrets.COLLEGE_NEWS_API }}
+          COLLEGE_EXAM_API: ${{ secrets.COLLEGE_EXAM_API }}
+          TEST_MODE: ${{ secrets.TEST_MODE }}
+        run: node index.js
