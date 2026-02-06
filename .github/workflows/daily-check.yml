@@ -2,7 +2,7 @@ name: Daily Exam Notice Checker
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '30 4,9 * * *'
   workflow_dispatch:
 
 jobs:
