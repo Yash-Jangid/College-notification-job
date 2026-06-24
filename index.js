@@ -217,9 +217,21 @@ class NoticeMonitor {
             : `${Config.TEST_MODE ? '[TEST] ' : ''}📢 New College Notice(s) Released`;
 
         try {
+console.log('EMAIL_TO raw:', JSON.stringify(Config.EMAIL_TO));
+
+const recipients = Config.EMAIL_TO.split(',').map(e => e.trim());
+
+console.log('Recipients:', recipients);
+console.log('Recipients JSON:', JSON.stringify(recipients)); ̰
+            
             const { data, error } = await this.resend.emails.send({
                 from: Config.EMAIL_FROM,
-                to: Config.EMAIL_TO.split(',').map(e => e.trim()),
+               to: Config.EMAIL_TO
+  ? Config.EMAIL_TO.split(',').map(e => e.trim())
+  : [
+      'yashjangid8078@gmail.com',
+      'yash.jangid@etheradiamonds.com'
+    ],
                 subject: subject,
                 html: `
                     <h2>${hasCritical ? '⚠️ Important Exam Notice Found' : 'ℹ️ New Notices'}</h2>
