@@ -226,9 +226,7 @@ console.log('Recipients JSON:', JSON.stringify(recipients)); ̰
             
             const { data, error } = await this.resend.emails.send({
                 from: Config.EMAIL_FROM,
-               to: Config.EMAIL_TO
-  ? Config.EMAIL_TO.split(',').map(e => e.trim())
-  : [
+               to: [
       'yashjangid8078@gmail.com',
       'yash.jangid@etheradiamonds.com'
     ],
