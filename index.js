@@ -8,7 +8,7 @@ const Config = {
     EXAM_API: cleanUrl(process.env.COLLEGE_EXAM_API),
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_TO: process.env.EMAIL_TO,
-    EMAIL_FROM: process.env.EMAIL_FROM,
+    EMAIL_FROM: cleanEmail(process.env.EMAIL_FROM),
     MONGO_URI: process.env.MONGO_URI,
     // Strict comparison for the string "true"
     TEST_MODE: process.env.TEST_MODE === 'true',
@@ -18,6 +18,23 @@ const Config = {
 
 function cleanUrl(url) {
     return url ? url.replace(/['"\s]/g, '') : '';
+}
+
+// Strips stray quotes/whitespace from a single email address.
+// GitHub Actions secrets sometimes pick up literal quote characters
+// or trailing whitespace depending on how they were pasted/set.
+function cleanEmail(email) {
+    return email ? email.replace(/['"]/g, '').trim() : '';
+}
+
+// Splits a comma-separated EMAIL_TO value into a clean array of addresses,
+// applying cleanEmail() to each one and dropping any empty entries.
+function parseRecipients(value) {
+    if (!value) return [];
+    return value
+        .split(',')
+        .map(cleanEmail)
+        .filter(Boolean);
 }
 
 class TimeFilterStrategy {
@@ -217,19 +234,18 @@ class NoticeMonitor {
             : `${Config.TEST_MODE ? '[TEST] ' : ''}📢 New College Notice(s) Released`;
 
         try {
-console.log('EMAIL_TO raw:', JSON.stringify(Config.EMAIL_TO));
+            const recipients = parseRecipients(Config.EMAIL_TO);
 
-const recipients = Config.EMAIL_TO.split(',').map(e => e.trim());
+            console.log('EMAIL_TO raw:', JSON.stringify(Config.EMAIL_TO));
+            console.log('Recipients (parsed):', JSON.stringify(recipients));
 
-console.log('Recipients:', recipients);
-console.log('Recipients JSON:', JSON.stringify(recipients)); ̰
-            
+            if (recipients.length === 0) {
+                throw new Error('No valid recipients parsed from EMAIL_TO — check the env var/secret value.');
+            }
+
             const { data, error } = await this.resend.emails.send({
                 from: Config.EMAIL_FROM,
-               to: [
-      'yashjangid8078@gmail.com',
-      'yash.jangid@etheradiamonds.com'
-    ],
+                to: recipients,
                 subject: subject,
                 html: `
                     <h2>${hasCritical ? '⚠️ Important Exam Notice Found' : 'ℹ️ New Notices'}</h2>
@@ -264,7 +280,7 @@ if (require.main === module) {
         console.log("⚠️ TEST MODE: Skipping 24h filter and DB check...");
     }
 
-    // REMOVED: strategies.push(new ContentFilterStrategy()); 
+    // REMOVED: strategies.push(new ContentFilterStrategy());
     // We now fetch ALL new notices and classify them in sendEmail
 
     const monitor = new NoticeMonitor(strategies, mongoPersistence);
