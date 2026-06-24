@@ -219,7 +219,7 @@ class NoticeMonitor {
         try {
             const { data, error } = await this.resend.emails.send({
                 from: Config.EMAIL_FROM,
-                to: [Config.EMAIL_TO],
+                to: Config.EMAIL_TO.split(',').map(e => e.trim()),
                 subject: subject,
                 html: `
                     <h2>${hasCritical ? '⚠️ Important Exam Notice Found' : 'ℹ️ New Notices'}</h2>
